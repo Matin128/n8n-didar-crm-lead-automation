@@ -1,2 +1,2 @@
 # n8n-didar-crm-lead-automation
-   و هوش مصنوعیn8n دیدار با استفاده از CRM اتوماسیون هوشمند جذب، ارزیابی و ثبت لیدها در دیدار با استفاده از
+Automated lead qualification and CRM integration workflow using n8n, AI, Didar CRM, Telegram, and Google Sheets.
