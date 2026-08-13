@@ -11,7 +11,11 @@
 
 در این ویدیو، نحوه کارکرد زنده سناریو، ارسال داده‌ها و ثبت خودکار در سیستم‌ها را مشاهده می‌کنید:
 
-<video src="./demo.mp4" controls width="100%"></video>
+
+
+https://github.com/user-attachments/assets/c7c12cd0-bc78-4c51-80dd-67f8ca6da500
+
+
 
 
 
