@@ -1,0 +1,436 @@
+{
+  "name": "crm-automation",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "eeb737d9-5714-4056-8033-d9c3e995d6a2",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -864,
+        -352
+      ],
+      "id": "54d96069-409f-40de-bc5a-dffdd48a1b74",
+      "name": "Webhook",
+      "webhookId": "eeb737d9-5714-4056-8033-d9c3e995d6a2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8bc1244f-ac1d-4fda-9a42-8f1d29fc5d19",
+              "name": "نام ",
+              "value": "={{ $json.body.fields[1].value }}",
+              "type": "string"
+            },
+            {
+              "id": "01203060-4d04-4e56-b411-1ac7edc6d53a",
+              "name": "نام خانوادگی",
+              "value": "={{ $json.body.fields[0].value }}",
+              "type": "string"
+            },
+            {
+              "id": "6e65b497-d04b-4ba8-8aae-2a155ad0f49e",
+              "name": "سایت درخاستی",
+              "value": "={{ $json.body.fields[2].value }}",
+              "type": "string"
+            },
+            {
+              "id": "bbce410b-d085-4fca-863f-81947ae1e2c0",
+              "name": "شماره تماس",
+              "value": "={{ $json.body.fields[3].value }}",
+              "type": "string"
+            },
+            {
+              "id": "330b69fc-2609-4966-902d-e0f8ca74174f",
+              "name": "ایمیل ",
+              "value": "={{ $json.body.fields[4].value }}",
+              "type": "string"
+            },
+            {
+              "id": "1879df74-8a4a-4ae1-9ea8-d191bf6f2c7c",
+              "name": "قیمت پیشنهادی",
+              "value": "={{ $json.body.fields[5].value }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -640,
+        -352
+      ],
+      "id": "2b8ba807-d84e-4b25-8132-11d853f6899d",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "6febd55d-1f94-48c5-a884-a621628ecf76",
+              "leftValue": "={{ $json.Response.TotalCount }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        384,
+        -400
+      ],
+      "id": "57739277-3536-4aa5-b584-9cefe4096227",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "=🔔 درخواست جدید طراحی سایت ثبت شد\n\n📊 سطح لید (ارزیابی AI): {{ $json.lead_score_fa }}\n\n👤 **اطلاعات مشتری:**\n• نام و نام خانوادگی: {{ $('Edit Fields').item.json['نام '] }} {{ $('Edit Fields').item.json['نام خانوادگی'] }}\n• شماره تماس: {{ $('Edit Fields').item.json['شماره تماس'] }}\n• ایمیل: {{ $('Edit Fields').item.json['ایمیل '] }}\n\n📌 جزئیات درخواست:\n• نوع سایت: {{ $('Edit Fields').item.json['سایت درخاستی'] }}\n• قیمت پیشنهادی: {{ $('Edit Fields').item.json['قیمت پیشنهادی'] }} تومان\n• موضوع فرم: {{ $('Webhook').item.json.body.form_title }}\n• زمان ثبت: {{ $now.toFormat('yyyy-MM-dd HH:mm') }}\n\n🤖 تحلیل هوش مصنوعی:\n{{ $json.summary }}\n\n💡 اقدام پیشنهادی به فروشنده:\n{{ $json.recommended_action }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        160,
+        -592
+      ],
+      "id": "0c803027-049b-40b6-a65f-802087843bf0",
+      "name": "Send a text message",
+      "webhookId": "32aaa860-32a4-407a-a95a-017c0fe55398",
+      "credentials": {
+        "telegramApi": {
+          "id": "7mJTJHbaUM7VlqGW",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://app.didar.me/api/contact/save",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={\n    \"Contact\": {\n    \"FirstName\": \"{{ $('Edit Fields').item.json['نام '] }}\",\n    \"LastName\": \"{{ $('Edit Fields').item.json['نام خانوادگی'] }}\",\n    \"MobilePhone\": \"{{ $('Edit Fields').item.json['شماره تماس'] }}\",\n    \"Email\": \"{{ $('Edit Fields').item.json['ایمیل '] }}\"\n  }\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        608,
+        -496
+      ],
+      "id": "675a3d6b-83fc-49ab-9ec5-1b460ba9f0da",
+      "name": "create-new-contact",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "0swj0rxrNO93XuuP",
+          "name": "Query Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=اطلاعات لید جدید برای تحلیل:\n- نوع سایت درخواستی: {{ $json['سایت درخاستی'] }}\n- قیمت پیشنهادی کاربر: {{ $json['قیمت پیشنهادی'] }}\n- نام و نام خانوادگی: {{ $json['نام '] }} {{ $json['نام خانوادگی'] }}",
+        "options": {
+          "systemMessage": "تو یک کارشناس ارشد سنجش و رتبه‌بندی لیدهای فروش (Lead Qualification Expert) در یک شرکت طراحی سایت هستی.\nوظیفه تو این است که اطلاعات دریافتی از فرم درخواست مشتری را تحلیل کرده و وضعیت لید را ارزیابی کنی.\n\nقوانین ارزیابی:\n1. وضعیت لید (lead_status):\n   - اگر قیمت پیشنهادی خوب/معقول است یا نوع سایت اختصاصی/پیچیده است -> \"HOT\"\n   - اگر قیمت پیشنهادی متوسط است یا توضیحات عمومی است -> \"WARM\"\n   - اگر قیمت پیشنهادی بسیار پایین، غیرمنطقی یا نامشخص است -> \"COLD\"\n2. درجه لید به فارسی (lead_score_fa): \"🔴 عالی (HOT)\" یا \"🟡 متوسط (WARM)\" یا \"🔵 ضعیف (COLD)\"\n3. خلاصه (summary): تحلیلی کوتاه در ۱ جمله از وضعیت بودجه و نوع درخواست کاربر.\n4. اقدام پیشنهادی (recommended_action): اولین قدم عملی که کارشناس فروش باید انجام دهد (مثلاً: تماس فوری، ارسال نمونه‌کار فروشگاهی، استعلام دقیق‌تر بودجه).\n\nپاسخ را **دقیقاً و صرفاً** در قالب یک JSON معتبر بدون هیچ متن اضافه یا Markdown Codeblock جانبی برگردان:\n{\n  \"lead_status\": \"HOT\",\n  \"lead_score_fa\": \"🔴 عالی (HOT)\",\n  \"summary\": \"متن خلاصه\",\n  \"recommended_action\": \"متن پیشنهاد اقدام\"\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -416,
+        -656
+      ],
+      "id": "478d2ff9-97fe-448f-85f5-131515bb0e5c",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.1-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        -432,
+        -464
+      ],
+      "id": "34e6896b-ac6e-4225-8fab-5a871bafe68c",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ZlY76urVdYt1Qd1r",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "for (const item of $input.all()) {\n  // ۱. استخراج متن خام از خروجی هوش مصنوعی\n  // (اگر نام کلید خروجی نود AI شما متفاوت است، آن را جایگزین کنید)\n  let rawText = item.json.text || item.json.output || item.json.content || item.json.response || \"\";\n\n  // ۲. پاک‌سازی کاراکترهای اضافی، تگ‌های Markdown و فواصل\n  rawText = rawText\n    .replace(/```json/gi, \"\")\n    .replace(/```/g, \"\")\n    .trim();\n\n  let parsedData = {};\n\n  try {\n    // ۳. تبدیل متن پاک‌سازی شده به یک آبجکت واقعی JSON\n    parsedData = JSON.parse(rawText);\n  } catch (error) {\n    // ۴. مقدار جایگزین (Fallback) در صورت بروز خطا در پارس کردن AI\n    parsedData = {\n      lead_status: \"WARM\",\n      lead_score_fa: \"🟡 متوسط (WARM)\",\n      summary: \"پاسخ هوش مصنوعی ساختار استاندارد نداشت: \" + rawText,\n      recommended_action: \"بررسی دستی درخواست توسط کارشناس فروش.\"\n    };\n  }\n\n  // ۵. تزریق مقادیر تمیزشده به خروجی نهای برای استفاده در نودهای بعدی\n  item.json.lead_status = parsedData.lead_status || \"WARM\";\n  item.json.lead_score_fa = parsedData.lead_score_fa || \"🟡 متوسط (WARM)\";\n  item.json.summary = parsedData.summary || \"بدون خلاصه\";\n  item.json.recommended_action = parsedData.recommended_action || \"پیگیری اولیه با مشتری\";\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -64,
+        -496
+      ],
+      "id": "dcf61923-9e7e-4611-86e9-6686ea16c591",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://app.didar.me/api/deal/save_v2",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n   \"Deal\": {\n    \"PersonId\": \"{{ $('search-member-on-didar').item.json.Response.List[0].Id }}\",\n    \"Title\": \"{{ $('Webhook').item.json.body.form_title }}\",\n    \"PipelineStageId\": \"YOUR_DIDAR_PIPELINE_STAGE_ID\",\n    \"OwnerId\": \"{{ $('search-member-on-didar').item.json.Response.List[0].OwnerId }}\",\n    \"Price\": {{ $('Webhook').item.json.body.fields[5].value }},\n\"Description\":\n\"{{ $('Code in JavaScript').item.json.lead_score_fa }} - {{ $('Code in JavaScript').item.json.summary }}\"  }\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        608,
+        -304
+      ],
+      "id": "763a9c04-2a07-462a-a69a-a59d01919870",
+      "name": "create-deal",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "0swj0rxrNO93XuuP",
+          "name": "Query Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://app.didar.me/api/deal/save_v2",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n   \"Deal\": {\n    \"PersonId\": \"{{ $json.Response.Id }}\",\n    \"Title\": \"{{ $('Webhook').item.json.body.form_title }} - {{ $('Code in JavaScript').item.json.lead_score_fa }}\",\n    \"PipelineStageId\": \"YOUR_DIDAR_PIPELINE_STAGE_ID\",\n    \"OwnerId\": \"{{ $json.Response.OwnerId }}\",\n    \"Price\": {{ $('Webhook').item.json.body.fields[5].value }},\n    \"Description\": \"🌐 نوع سایت: {{ $('Webhook').item.json.body.fields[2].value }}\\n💰 بودجه: {{ $('Webhook').item.json.body.fields[5].value }}\\n\\n📊 ارزیابی AI: {{ $('Code in JavaScript').item.json.lead_score_fa }}\\n📝 خلاصه: {{ $('Code in JavaScript').item.json.summary }}\\n💡 اقدام پیشنهادی: {{ $('Code in JavaScript').item.json.recommended_action }}\"\n  }  \n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        832,
+        -496
+      ],
+      "id": "a2adc405-3034-4918-8fd2-e3186573fcf5",
+      "name": "create-deal 2",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "0swj0rxrNO93XuuP",
+          "name": "Query Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://app.didar.me/api/contact/PersonSearch",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"Criteria\": {\n    \"IsDeleted\": 0,\n    \"IsPinned\": -1,\n    \"IsVIP\": -1,\n    \"LeadType\": -1,\n    \"Pin\": -1,\n     \"SortOrder\": 1,\n    \"Keywords\": \"{{ $('Webhook').item.json.body.fields[3].value.replace(/\\\\D/g, '') }}\",\n    \"OwnerId\": \"00000000-0000-0000-0000-000000000000\",\n    \"SearchFromTime\": \"1930-01-01T00:00:00.000Z\",\n    \"SearchToTime\": \"9999-12-01T00:00:00.000Z\",\n    \"CustomFields\": [],\n    \"FilterId\": null\n  },\n  \"From\": 0,\n  \"Limit\": 10\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        160,
+        -400
+      ],
+      "id": "82c35d4d-1362-463e-a56e-cf3b0c95513e",
+      "name": "search-member-on-didar",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "0swj0rxrNO93XuuP",
+          "name": "Query Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -384,
+        -208
+      ],
+      "id": "ea66245c-f786-43fc-83fd-84f380234f97",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "oONkBIAB9WwuFIbI",
+          "name": "Google Sheets account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "create-new-contact",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "create-deal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create-new-contact": {
+      "main": [
+        [
+          {
+            "node": "create-deal 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "search-member-on-didar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "search-member-on-didar": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "f82d6076-c430-4bac-bb76-13b922b1b925",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6aa36ad0122b7a04ca25227e43429297f24bed98ebdbf794efc96523afb59dbf"
+  },
+  "nodeGroups": [],
+  "id": "n4PDn4Sm6PYkSh57",
+  "tags": []
+}
